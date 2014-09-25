@@ -28,8 +28,8 @@ import abc
 import six
 from six.moves.urllib import parse
 
-from cinderclient.openstack.common.apiclient import exceptions
-from cinderclient.openstack.common import strutils
+from brickclient.openstack.common.apiclient import exceptions
+from brickclient.openstack.common import strutils
 
 
 def getid(obj):

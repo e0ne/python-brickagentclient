@@ -13,8 +13,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from cinderclient import base
-from cinderclient import utils
+from brickclient import base
+from brickclient import utils
 
 
 class ListExtResource(base.Resource):

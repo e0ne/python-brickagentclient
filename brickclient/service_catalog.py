@@ -42,7 +42,7 @@ class ServiceCatalog(object):
                 if not filter_value or endpoint[attr] == filter_value:
                     matching_endpoints.append(endpoint)
             if not matching_endpoints:
-                raise cinderclient.exceptions.EndpointNotFound()
+                raise brickclient.exceptions.EndpointNotFound()
 
         # We don't always get a service catalog back ...
         if 'serviceCatalog' not in self.catalog['access']:

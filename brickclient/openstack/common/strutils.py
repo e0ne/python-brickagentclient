@@ -24,7 +24,7 @@ import unicodedata
 
 import six
 
-from cinderclient.openstack.common.gettextutils import _
+from brickclient.openstack.common.gettextutils import _
 
 
 UNIT_PREFIX_EXPONENT = {

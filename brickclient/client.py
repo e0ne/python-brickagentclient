@@ -261,10 +261,15 @@ class HTTPClient(object):
             attempts += 1
             if not self.management_url or not self.auth_token:
                 self.authenticate()
+            # TODO e0ne: fix it!
+            self.management_url = 'http://localhost:8796/v1'
+            self.auth_token = 'admin'
+
             kwargs.setdefault('headers', {})['X-Auth-Token'] = self.auth_token
             if self.projectid:
                 kwargs['headers']['X-Auth-Project-Id'] = self.projectid
             try:
+
                 resp, body = self.request(self.management_url + url, method,
                                           **kwargs)
                 return resp, body

@@ -14,4 +14,4 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from cinderclient.v1.client import Client     # noqa
+from brickclient.v1.client import Client     # noqa

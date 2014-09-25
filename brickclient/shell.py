@@ -149,11 +149,11 @@ class OpenStackCinderShell(object):
         parser.add_argument('--service_name',
                             help=argparse.SUPPRESS)
 
-        parser.add_argument('--volume-service-name',
-                            metavar='<volume-service-name>',
-                            default=utils.env('CINDER_VOLUME_SERVICE_NAME'),
+        parser.add_argument('--brick-service-name',
+                            metavar='<brick-service-name>',
+                            default=utils.env('CINDER_BRICK_SERVICE_NAME'),
                             help='Volume service name. '
-                            'Default=env[CINDER_VOLUME_SERVICE_NAME].')
+                            'Default=env[CINDER_BRICK_SERVICE_NAME].')
         parser.add_argument('--volume_service_name',
                             help=argparse.SUPPRESS)
 
@@ -188,8 +188,8 @@ class OpenStackCinderShell(object):
         self._append_global_identity_args(parser)
 
         # The auth-system-plugins might require some extra options
-        cinderclient.auth_plugin.discover_auth_systems()
-        cinderclient.auth_plugin.load_auth_system_opts(parser)
+        brickclient.auth_plugin.discover_auth_systems()
+        brickclient.auth_plugin.load_auth_system_opts(parser)
 
         return parser
 
@@ -404,14 +404,14 @@ class OpenStackCinderShell(object):
                 self._discover_via_python_path(version),
                 self._discover_via_contrib_path(version)):
 
-            extension = cinderclient.extension.Extension(name, module)
+            extension = brickclient.extension.Extension(name, module)
             extensions.append(extension)
 
         return extensions
 
     def _discover_via_python_path(self, version):
         for (module_loader, name, ispkg) in pkgutil.iter_modules():
-            if name.endswith('python_cinderclient_ext'):
+            if name.endswith('python_brickclient_ext'):
                 if not hasattr(module_loader, 'load_module'):
                     # Python 2.6 compat: actually get an ImpImporter obj
                     module_loader = module_loader.find_module(name)
@@ -530,18 +530,18 @@ class OpenStackCinderShell(object):
 
         (os_username, os_password, os_tenant_name, os_auth_url,
          os_region_name, os_tenant_id, endpoint_type, insecure,
-         service_type, service_name, volume_service_name,
+         service_type, service_name, brick_service_name,
          cacert, os_auth_system) = (
              args.os_username, args.os_password,
              args.os_tenant_name, args.os_auth_url,
              args.os_region_name, args.os_tenant_id,
              args.endpoint_type, args.insecure,
              args.service_type, args.service_name,
-             args.volume_service_name, args.os_cacert,
+             args.brick_service_name, args.os_cacert,
              args.os_auth_system)
 
         if os_auth_system and os_auth_system != "keystone":
-            auth_plugin = cinderclient.auth_plugin.load_plugin(os_auth_system)
+            auth_plugin = brickclient.auth_plugin.load_plugin(os_auth_system)
         else:
             auth_plugin = None
 
@@ -552,71 +552,71 @@ class OpenStackCinderShell(object):
             service_type = DEFAULT_CINDER_SERVICE_TYPE
             service_type = utils.get_service_type(args.func) or service_type
 
-        # FIXME(usrleon): Here should be restrict for project id same as
-        # for os_username or os_password but for compatibility it is not.
+        # TODO e0ne: Authentication
 
-        if not utils.isunauthenticated(args.func):
-            if auth_plugin:
-                auth_plugin.parse_opts(args)
+        # if not utils.isunauthenticated(args.func):
+        #     if auth_plugin:
+        #         auth_plugin.parse_opts(args)
+        #
+        #     if not auth_plugin or not auth_plugin.opts:
+        #         if not os_username:
+        #             raise exc.CommandError("You must provide a user name "
+        #                                    "through --os-username or "
+        #                                    "env[OS_USERNAME].")
+        #
+        #     if not os_password:
+        #         raise exc.CommandError("You must provide a password "
+        #                                "through --os-password or "
+        #                                "env[OS_PASSWORD].")
+        #
+        #     if not (os_tenant_name or os_tenant_id):
+        #         raise exc.CommandError("You must provide a tenant ID "
+        #                                "through --os-tenant-id or "
+        #                                "env[OS_TENANT_ID].")
+        #
+        #     # V3 stuff
+        #     project_info_provided = self.options.os_tenant_name or \
+        #         self.options.os_tenant_id or \
+        #         (self.options.os_project_name and
+        #          (self.options.project_domain_name or
+        #           self.options.project_domain_id)) or \
+        #         self.options.os_project_id
+        #
+        #     if (not project_info_provided):
+        #         raise exc.CommandError(
+        #             _("You must provide a tenant_name, tenant_id, "
+        #               "project_id or project_name (with "
+        #               "project_domain_name or project_domain_id) via "
+        #               "  --os-tenant-name (env[OS_TENANT_NAME]),"
+        #               "  --os-tenant-id (env[OS_TENANT_ID]),"
+        #               "  --os-project-id (env[OS_PROJECT_ID])"
+        #               "  --os-project-name (env[OS_PROJECT_NAME]),"
+        #               "  --os-project-domain-id "
+        #               "(env[OS_PROJECT_DOMAIN_ID])"
+        #               "  --os-project-domain-name "
+        #               "(env[OS_PROJECT_DOMAIN_NAME])"))
+        #
+        #     if not os_auth_url:
+        #         if os_auth_system and os_auth_system != 'keystone':
+        #             os_auth_url = auth_plugin.get_auth_url()
+        #
+        #     if not os_auth_url:
+        #         raise exc.CommandError(
+        #             "You must provide an authentication URL "
+        #             "through --os-auth-url or env[OS_AUTH_URL].")
+        #
+        # if not (os_tenant_name or os_tenant_id):
+        #     raise exc.CommandError(
+        #         "You must provide a tenant ID "
+        #         "through --os-tenant-id or env[OS_TENANT_ID].")
+        #
+        # if not os_auth_url:
+        #     raise exc.CommandError(
+        #         "You must provide an authentication URL "
+        #         "through --os-auth-url or env[OS_AUTH_URL].")
 
-            if not auth_plugin or not auth_plugin.opts:
-                if not os_username:
-                    raise exc.CommandError("You must provide a user name "
-                                           "through --os-username or "
-                                           "env[OS_USERNAME].")
-
-            if not os_password:
-                raise exc.CommandError("You must provide a password "
-                                       "through --os-password or "
-                                       "env[OS_PASSWORD].")
-
-            if not (os_tenant_name or os_tenant_id):
-                raise exc.CommandError("You must provide a tenant ID "
-                                       "through --os-tenant-id or "
-                                       "env[OS_TENANT_ID].")
-
-            # V3 stuff
-            project_info_provided = self.options.os_tenant_name or \
-                self.options.os_tenant_id or \
-                (self.options.os_project_name and
-                 (self.options.project_domain_name or
-                  self.options.project_domain_id)) or \
-                self.options.os_project_id
-
-            if (not project_info_provided):
-                raise exc.CommandError(
-                    _("You must provide a tenant_name, tenant_id, "
-                      "project_id or project_name (with "
-                      "project_domain_name or project_domain_id) via "
-                      "  --os-tenant-name (env[OS_TENANT_NAME]),"
-                      "  --os-tenant-id (env[OS_TENANT_ID]),"
-                      "  --os-project-id (env[OS_PROJECT_ID])"
-                      "  --os-project-name (env[OS_PROJECT_NAME]),"
-                      "  --os-project-domain-id "
-                      "(env[OS_PROJECT_DOMAIN_ID])"
-                      "  --os-project-domain-name "
-                      "(env[OS_PROJECT_DOMAIN_NAME])"))
-
-            if not os_auth_url:
-                if os_auth_system and os_auth_system != 'keystone':
-                    os_auth_url = auth_plugin.get_auth_url()
-
-            if not os_auth_url:
-                raise exc.CommandError(
-                    "You must provide an authentication URL "
-                    "through --os-auth-url or env[OS_AUTH_URL].")
-
-        if not (os_tenant_name or os_tenant_id):
-            raise exc.CommandError(
-                "You must provide a tenant ID "
-                "through --os-tenant-id or env[OS_TENANT_ID].")
-
-        if not os_auth_url:
-            raise exc.CommandError(
-                "You must provide an authentication URL "
-                "through --os-auth-url or env[OS_AUTH_URL].")
-
-        auth_session = self._get_keystone_session()
+        # auth_session = self._get_keystone_session()
+        auth_session = None
 
         self.cs = client.Client(options.os_volume_api_version, os_username,
                                 os_password, os_tenant_name, os_auth_url,
@@ -626,48 +626,48 @@ class OpenStackCinderShell(object):
                                 extensions=self.extensions,
                                 service_type=service_type,
                                 service_name=service_name,
-                                volume_service_name=volume_service_name,
+                                volume_service_name=brick_service_name,
                                 retries=options.retries,
                                 http_log_debug=args.debug,
                                 cacert=cacert, auth_system=os_auth_system,
                                 auth_plugin=auth_plugin,
                                 session=auth_session)
 
-        try:
-            if not utils.isunauthenticated(args.func):
-                self.cs.authenticate()
-        except exc.Unauthorized:
-            raise exc.CommandError("OpenStack credentials are not valid.")
-        except exc.AuthorizationFailure:
-            raise exc.CommandError("Unable to authorize user.")
+        # try:
+        #     if not utils.isunauthenticated(args.func):
+        #         self.cs.authenticate()
+        # except exc.Unauthorized:
+        #     raise exc.CommandError("OpenStack credentials are not valid.")
+        # except exc.AuthorizationFailure:
+        #     raise exc.CommandError("Unable to authorize user.")
 
-        endpoint_api_version = None
+        # endpoint_api_version = None
         # Try to get the API version from the endpoint URL.  If that fails fall
         # back to trying to use what the user specified via
         # --os-volume-api-version or with the OS_VOLUME_API_VERSION environment
         # variable.  Fail safe is to use the default API setting.
-        try:
-            endpoint_api_version = \
-                self.cs.get_volume_api_version_from_endpoint()
-            if endpoint_api_version != options.os_volume_api_version:
-                msg = (("OpenStack Block Storage API version is set to %s "
-                        "but you are accessing a %s endpoint. "
-                        "Change its value through --os-volume-api-version "
-                        "or env[OS_VOLUME_API_VERSION].")
-                       % (options.os_volume_api_version, endpoint_api_version))
-                raise exc.InvalidAPIVersion(msg)
-        except exc.UnsupportedVersion:
-            endpoint_api_version = options.os_volume_api_version
-            if api_version_input:
-                logger.warning("Cannot determine the API version from "
-                               "the endpoint URL. Falling back to the "
-                               "user-specified version: %s" %
-                               endpoint_api_version)
-            else:
-                logger.warning("Cannot determine the API version from the "
-                               "endpoint URL or user input. Falling back "
-                               "to the default API version: %s" %
-                               endpoint_api_version)
+        # try:
+        #     endpoint_api_version = \
+        #         self.cs.get_volume_api_version_from_endpoint()
+        #     if endpoint_api_version != options.os_volume_api_version:
+        #         msg = (("OpenStack Block Storage API version is set to %s "
+        #                 "but you are accessing a %s endpoint. "
+        #                 "Change its value through --os-volume-api-version "
+        #                 "or env[OS_VOLUME_API_VERSION].")
+        #                % (options.os_volume_api_version, endpoint_api_version))
+        #         raise exc.InvalidAPIVersion(msg)
+        # except exc.UnsupportedVersion:
+        #     endpoint_api_version = options.os_volume_api_version
+        #     if api_version_input:
+        #         logger.warning("Cannot determine the API version from "
+        #                        "the endpoint URL. Falling back to the "
+        #                        "user-specified version: %s" %
+        #                        endpoint_api_version)
+        #     else:
+        #         logger.warning("Cannot determine the API version from the "
+        #                        "endpoint URL or user input. Falling back "
+        #                        "to the default API version: %s" %
+        #                        endpoint_api_version)
 
         args.func(self.cs, args)
 

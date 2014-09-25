@@ -24,7 +24,7 @@ import os
 import six
 from stevedore import extension
 
-from cinderclient.openstack.common.apiclient import exceptions
+from brickclient.openstack.common.apiclient import exceptions
 
 
 _discovered_plugins = {}

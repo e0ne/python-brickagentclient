@@ -13,20 +13,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from cinderclient import client
-from cinderclient.v1 import availability_zones
-from cinderclient.v1 import limits
-from cinderclient.v1 import qos_specs
-from cinderclient.v1 import quota_classes
-from cinderclient.v1 import quotas
-from cinderclient.v1 import services
-from cinderclient.v1 import volumes
-from cinderclient.v1 import volume_snapshots
-from cinderclient.v1 import volume_types
-from cinderclient.v1 import volume_encryption_types
-from cinderclient.v1 import volume_backups
-from cinderclient.v1 import volume_backups_restore
-from cinderclient.v1 import volume_transfers
+from brickclient import client
+from brickclient.v1 import connector
 
 
 class Client(object):
@@ -55,23 +43,9 @@ class Client(object):
         # FIXME(comstud): Rename the api_key argument above when we
         # know it's not being used as keyword argument
         password = api_key
-        self.limits = limits.LimitsManager(self)
+        self.connector = connector.LimitsManager(self)
 
         # extensions
-        self.volumes = volumes.VolumeManager(self)
-        self.volume_snapshots = volume_snapshots.SnapshotManager(self)
-        self.volume_types = volume_types.VolumeTypeManager(self)
-        self.volume_encryption_types = \
-            volume_encryption_types.VolumeEncryptionTypeManager(self)
-        self.qos_specs = qos_specs.QoSSpecsManager(self)
-        self.quota_classes = quota_classes.QuotaClassSetManager(self)
-        self.quotas = quotas.QuotaSetManager(self)
-        self.backups = volume_backups.VolumeBackupManager(self)
-        self.restores = volume_backups_restore.VolumeBackupRestoreManager(self)
-        self.transfers = volume_transfers.VolumeTransferManager(self)
-        self.services = services.ServiceManager(self)
-        self.availability_zones = \
-            availability_zones.AvailabilityZoneManager(self)
 
         # Add in any extensions...
         if extensions:

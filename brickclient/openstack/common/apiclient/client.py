@@ -35,8 +35,8 @@ except ImportError:
 
 import requests
 
-from cinderclient.openstack.common.apiclient import exceptions
-from cinderclient.openstack.common import importutils
+from brickclient.openstack.common.apiclient import exceptions
+from brickclient.openstack.common import importutils
 
 
 _logger = logging.getLogger(__name__)

@@ -1,7 +1,4 @@
-# Copyright 2010 Jacob Kaplan-Moss
-#
-# Copyright (c) 2011-2014 OpenStack Foundation
-# All Rights Reserved.
+# Copyright 2011 OpenStack Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,21 +13,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from __future__ import print_function
-
-import argparse
-import copy
-import os
-import sys
-import time
-
-from brickclient import exceptions
-from brickclient.openstack.common import strutils
-from brickclient import utils
+from brickclient import base
 
 
-@utils.service_type('volume')
-def do_connector(cs, args):
-    """Get the connection properties for all protocols."""
-    c = cs.connector.get()
-    utils.print_dict(c.connector, 'Name')
+class Connector(base.Resource):
+    """A collection of RateLimit and AbsoluteLimit objects."""
+
+    def __repr__(self):
+        return "<Connector>"
+
+
+class LimitsManager(base.Manager):
+    """Manager object used to interact with limits resource."""
+
+    resource_class = Connector
+
+    def get(self):
+        """
+        Get a specific extension.
+
+        :rtype: :class:`Limits`
+        """
+        return self._get("/admin/connector")
