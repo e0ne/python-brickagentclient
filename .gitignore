@@ -1,0 +1,20 @@
+.coverage
+.venv
+.tox
+.testrepository
+subunit.log
+*,cover
+cover
+*.pyc
+AUTHORS
+ChangeLog
+doc/build
+build
+dist
+cinderclient/versioninfo
+python_cinderclient.egg-info
+
+# Development environment files
+.project
+.pydevproject
+.idea
