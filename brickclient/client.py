@@ -52,7 +52,7 @@ if not hasattr(urlparse, 'parse_qsl'):
     import cgi
     urlparse.parse_qsl = cgi.parse_qsl
 
-_VALID_VERSIONS = ['v1', 'v2']
+_VALID_VERSIONS = ['v1']
 
 
 def get_volume_api_from_url(url):
@@ -72,7 +72,7 @@ class SessionClient(adapter.LegacyJsonAdapter):
 
     def __init__(self, **kwargs):
         kwargs.setdefault('user_agent', 'python-brickclient')
-        kwargs.setdefault('service_type', 'volume')
+        kwargs.setdefault('service_type', 'brick')
         super(SessionClient, self).__init__(**kwargs)
 
     def request(self, *args, **kwargs):
@@ -261,9 +261,6 @@ class HTTPClient(object):
             attempts += 1
             if not self.management_url or not self.auth_token:
                 self.authenticate()
-            # TODO e0ne: fix it!
-            self.management_url = 'http://localhost:8796/v1'
-            self.auth_token = 'admin'
 
             kwargs.setdefault('headers', {})['X-Auth-Token'] = self.auth_token
             if self.projectid:
@@ -479,7 +476,7 @@ def _construct_http_client(username=None, password=None, project_id=None,
                            auth_url=None, insecure=False, timeout=None,
                            proxy_tenant_id=None, proxy_token=None,
                            region_name=None, endpoint_type='publicURL',
-                           service_type='volume',
+                           service_type='brick',
                            service_name=None, volume_service_name=None,
                            retries=None,
                            http_log_debug=False,
@@ -525,7 +522,6 @@ def _construct_http_client(username=None, password=None, project_id=None,
 def get_client_class(version):
     version_map = {
         '1': 'brickclient.v1.client.Client',
-        '2': 'brickclient.v2.client.Client',
     }
     try:
         client_path = version_map[str(version)]

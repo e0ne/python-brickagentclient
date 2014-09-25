@@ -34,4 +34,4 @@ class LimitsManager(base.Manager):
 
         :rtype: :class:`Limits`
         """
-        return self._get("/admin/connector")
+        return self._get("/connector")

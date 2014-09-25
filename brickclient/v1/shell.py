@@ -29,7 +29,7 @@ from brickclient.openstack.common import strutils
 from brickclient import utils
 
 
-@utils.service_type('volume')
+@utils.service_type('brick')
 def do_connector(cs, args):
     """Get the connection properties for all protocols."""
     c = cs.connector.get()
