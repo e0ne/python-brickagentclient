@@ -78,3 +78,5 @@ class FakeHTTPClient(base_client.HTTPClient):
         })
         return r, body
 
+    def get_connector(self, **kwargs):
+        return (200, {}, {})
