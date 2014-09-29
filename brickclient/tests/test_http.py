@@ -15,9 +15,9 @@ import mock
 
 import requests
 
-from cinderclient import client
-from cinderclient import exceptions
-from cinderclient.tests import utils
+from brickclient import client
+from brickclient import exceptions
+from brickclient.tests import utils
 
 
 fake_response = utils.TestResponse({

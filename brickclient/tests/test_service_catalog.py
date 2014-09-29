@@ -11,9 +11,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from cinderclient import exceptions
-from cinderclient import service_catalog
-from cinderclient.tests import utils
+from brickclient import exceptions
+from brickclient import service_catalog
+from brickclient.tests import utils
 
 
 # Taken directly from keystone/content/common/samples/auth.json

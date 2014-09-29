@@ -43,7 +43,7 @@ class Client(object):
         # FIXME(comstud): Rename the api_key argument above when we
         # know it's not being used as keyword argument
         password = api_key
-        self.connector = connector.LimitsManager(self)
+        self.connector = connector.ConnectorManager(self)
 
         # extensions
 
@@ -88,6 +88,3 @@ class Client(object):
         credentials are wrong.
         """
         self.client.authenticate()
-
-    def get_volume_api_version_from_endpoint(self):
-        return self.client.get_volume_api_version_from_endpoint()

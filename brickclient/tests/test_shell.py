@@ -20,10 +20,10 @@ import requests_mock
 from six import moves
 from testtools import matchers
 
-from cinderclient import exceptions
-from cinderclient import shell
-from cinderclient.tests import utils
-from cinderclient.tests.fixture_data import keystone_client
+from brickclient import exceptions
+from brickclient import shell
+from brickclient.tests import utils
+from brickclient.tests.fixture_data import keystone_client
 from keystoneclient.exceptions import DiscoveryFailure
 
 
@@ -43,11 +43,15 @@ class ShellTest(utils.TestCase):
             self.useFixture(fixtures.EnvironmentVariable(var,
                                                          self.FAKE_ENV[var]))
 
+    def register_keystone_auth_fixture(self, mocker, url):
+        mocker.register_uri('GET', url,
+                            text=keystone_client.keystone_request_callback)
+
     def shell(self, argstr):
         orig = sys.stdout
         try:
             sys.stdout = moves.StringIO()
-            _shell = shell.OpenStackCinderShell()
+            _shell = shell.OpenStackBrickShell()
             _shell.main(argstr.split())
         except SystemExit:
             exc_type, exc_value, exc_traceback = sys.exc_info()
@@ -62,34 +66,9 @@ class ShellTest(utils.TestCase):
     def test_help_unknown_command(self):
         self.assertRaises(exceptions.CommandError, self.shell, 'help foofoo')
 
-    def test_help(self):
-        required = [
-            '.*?^usage: ',
-            '.*?(?m)^\s+create\s+Creates a volume.',
-            '.*?(?m)^Run "cinder help SUBCOMMAND" for help on a subcommand.',
-        ]
-        help_text = self.shell('help')
-        for r in required:
-            self.assertThat(help_text,
-                            matchers.MatchesRegex(r, re.DOTALL | re.MULTILINE))
-
-    def test_help_on_subcommand(self):
-        required = [
-            '.*?^usage: cinder list',
-            '.*?(?m)^Lists all volumes.',
-        ]
-        help_text = self.shell('help list')
-        for r in required:
-            self.assertThat(help_text,
-                            matchers.MatchesRegex(r, re.DOTALL | re.MULTILINE))
-
-    def register_keystone_auth_fixture(self, mocker, url):
-        mocker.register_uri('GET', url,
-                            text=keystone_client.keystone_request_callback)
-
     @requests_mock.Mocker()
     def test_version_discovery(self, mocker):
-        _shell = shell.OpenStackCinderShell()
+        _shell = shell.OpenStackBrickShell()
 
         os_auth_url = "https://WrongDiscoveryResponse.discovery.com:35357/v2.0"
         self.register_keystone_auth_fixture(mocker, os_auth_url)
@@ -111,10 +90,10 @@ class ShellTest(utils.TestCase):
         self.assertEqual(v2_url, None, "Expected no v2 url")
 
 
-class CinderClientArgumentParserTest(utils.TestCase):
+class BrickClientArgumentParserTest(utils.TestCase):
 
     def test_ambiguity_solved_for_one_visible_argument(self):
-        parser = shell.CinderClientArgumentParser(add_help=False)
+        parser = shell.BrickClientArgumentParser(add_help=False)
         parser.add_argument('--test-parameter',
                             dest='visible_param',
                             action='store_true')
@@ -130,7 +109,7 @@ class CinderClientArgumentParserTest(utils.TestCase):
         self.assertFalse(opts.hidden_param)
 
     def test_raise_ambiguity_error_two_visible_argument(self):
-        parser = shell.CinderClientArgumentParser(add_help=False)
+        parser = shell.BrickClientArgumentParser(add_help=False)
         parser.add_argument('--test-parameter',
                             dest="visible_param1",
                             action='store_true')
@@ -141,7 +120,7 @@ class CinderClientArgumentParserTest(utils.TestCase):
         self.assertRaises(SystemExit, parser.parse_args, ['--test'])
 
     def test_raise_ambiguity_error_two_hidden_argument(self):
-        parser = shell.CinderClientArgumentParser(add_help=False)
+        parser = shell.BrickClientArgumentParser(add_help=False)
         parser.add_argument('--test-parameter',
                             dest="hidden_param1",
                             action='store_true',

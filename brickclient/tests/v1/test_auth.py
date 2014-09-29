@@ -16,9 +16,9 @@ import mock
 
 import requests
 
-from cinderclient.v1 import client
-from cinderclient import exceptions
-from cinderclient.tests import utils
+from brickclient.v1 import client
+from brickclient import exceptions
+from brickclient.tests import utils
 
 
 class AuthenticateAgainstKeystoneTests(utils.TestCase):

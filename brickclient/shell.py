@@ -49,17 +49,17 @@ import six.moves.urllib.parse as urlparse
 
 
 DEFAULT_OS_VOLUME_API_VERSION = "1"
-DEFAULT_CINDER_ENDPOINT_TYPE = 'publicURL'
-DEFAULT_CINDER_SERVICE_TYPE = 'brick'
+DEFAULT_BRICK_ENDPOINT_TYPE = 'publicURL'
+DEFAULT_BRICK_SERVICE_TYPE = 'brick'
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 
-class CinderClientArgumentParser(argparse.ArgumentParser):
+class BrickClientArgumentParser(argparse.ArgumentParser):
 
     def __init__(self, *args, **kwargs):
-        super(CinderClientArgumentParser, self).__init__(*args, **kwargs)
+        super(BrickClientArgumentParser, self).__init__(*args, **kwargs)
 
     def error(self, message):
         """error(message: string)
@@ -90,7 +90,7 @@ class CinderClientArgumentParser(argparse.ArgumentParser):
         compatibility.
         """
 
-        result = super(CinderClientArgumentParser, self)._get_option_tuples(
+        result = super(BrickClientArgumentParser, self)._get_option_tuples(
             option_string)
 
         if len(result) > 1:
@@ -101,13 +101,13 @@ class CinderClientArgumentParser(argparse.ArgumentParser):
         return result
 
 
-class OpenStackCinderShell(object):
+class OpenStackBrickShell(object):
 
     def get_base_parser(self):
-        parser = CinderClientArgumentParser(
-            prog='cinder',
+        parser = BrickClientArgumentParser(
+            prog='brick',
             description=__doc__.strip(),
-            epilog='Run "cinder help SUBCOMMAND" for help on a subcommand.',
+            epilog='Run "brick help SUBCOMMAND" for help on a subcommand.',
             add_help=False,
             formatter_class=OpenStackHelpFormatter,
         )
@@ -160,11 +160,11 @@ class OpenStackCinderShell(object):
         parser.add_argument('--endpoint-type',
                             metavar='<endpoint-type>',
                             default=utils.env('CINDER_ENDPOINT_TYPE',
-                            default=DEFAULT_CINDER_ENDPOINT_TYPE),
+                            default=DEFAULT_BRICK_ENDPOINT_TYPE),
                             help='Endpoint type, which is publicURL or '
                             'internalURL. '
                             'Default=nova env[CINDER_ENDPOINT_TYPE] or '
-                            + DEFAULT_CINDER_ENDPOINT_TYPE + '.')
+                            + DEFAULT_BRICK_ENDPOINT_TYPE + '.')
 
         parser.add_argument('--endpoint_type',
                             help=argparse.SUPPRESS)
@@ -546,10 +546,10 @@ class OpenStackCinderShell(object):
             auth_plugin = None
 
         if not endpoint_type:
-            endpoint_type = DEFAULT_CINDER_ENDPOINT_TYPE
+            endpoint_type = DEFAULT_BRICK_ENDPOINT_TYPE
 
         if not service_type:
-            service_type = DEFAULT_CINDER_SERVICE_TYPE
+            service_type = DEFAULT_BRICK_SERVICE_TYPE
             service_type = utils.get_service_type(args.func) or service_type
 
         if not utils.isunauthenticated(args.func):

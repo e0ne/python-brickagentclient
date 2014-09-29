@@ -15,25 +15,20 @@ import logging
 
 import fixtures
 
-import cinderclient.client
-import cinderclient.v1.client
-import cinderclient.v2.client
-from cinderclient.tests import utils
+import brickclient.client
+import brickclient.v1.client
+from brickclient.tests import utils
 
 
 class ClientTest(utils.TestCase):
 
     def test_get_client_class_v1(self):
-        output = cinderclient.client.get_client_class('1')
-        self.assertEqual(cinderclient.v1.client.Client, output)
-
-    def test_get_client_class_v2(self):
-        output = cinderclient.client.get_client_class('2')
-        self.assertEqual(cinderclient.v2.client.Client, output)
+        output = brickclient.client.get_client_class('1')
+        self.assertEqual(brickclient.v1.client.Client, output)
 
     def test_get_client_class_unknown(self):
-        self.assertRaises(cinderclient.exceptions.UnsupportedVersion,
-                          cinderclient.client.get_client_class, '0')
+        self.assertRaises(brickclient.exceptions.UnsupportedVersion,
+                          brickclient.client.get_client_class, '0')
 
     def test_log_req(self):
         self.logger = self.useFixture(
@@ -50,7 +45,7 @@ class ClientTest(utils.TestCase):
                           ' "passwordCredentials": {"username": "fakeUser",'
                           ' "password": "fakePassword"}}}')
 
-        cs = cinderclient.client.HTTPClient("user", None, None,
+        cs = brickclient.client.HTTPClient("user", None, None,
                                             "http://127.0.0.1:5000")
         cs.http_log_debug = True
         cs.http_log_req('PUT', kwargs)

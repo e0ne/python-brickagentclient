@@ -1,4 +1,4 @@
-# Copyright 2011 OpenStack Foundation
+# Copyright 2014 OpenStack Foundation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,25 +13,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from brickclient import base
+from brickclient.tests import utils
+from brickclient.tests.v1 import fakes
+
+from brickclient.v1 import connector
+
+cs = fakes.FakeClient()
 
 
-class Connector(base.Resource):
-    """A collection of RateLimit and AbsoluteLimit objects."""
+class TestConnector(utils.TestCase):
+    def test_get_connector(self):
+        c = cs.connector.get()
+        cs.assert_called('GET', '/connector')
+        self.assertIsInstance(c, connector.Connector)
 
-    def __repr__(self):
-        return "<Connector>"
-
-
-class ConnectorManager(base.Manager):
-    """Manager object used to interact with limits resource."""
-
-    resource_class = Connector
-
-    def get(self):
-        """
-        Get a specific extension.
-
-        :rtype: :class:`Limits`
-        """
-        return self._get("/connector")

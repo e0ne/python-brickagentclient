@@ -16,7 +16,7 @@ __all__ = ['__version__']
 
 import pbr.version
 
-version_info = pbr.version.VersionInfo('python-brickclient')
+version_info = '0.0.1' #pbr.version.VersionInfo('python-brickclient')
 # We have a circular import problem when we first run python setup.py sdist
 # It's harmless, so deflect it.
 try:
