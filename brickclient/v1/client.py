@@ -88,3 +88,6 @@ class Client(object):
         credentials are wrong.
         """
         self.client.authenticate()
+
+    def get_brick_api_version_from_endpoint(self):
+        return self.client.get_brick_api_version_from_endpoint()

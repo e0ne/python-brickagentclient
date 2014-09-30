@@ -645,8 +645,9 @@ class OpenStackBrickShell(object):
         # --os-volume-api-version or with the OS_VOLUME_API_VERSION environment
         # variable.  Fail safe is to use the default API setting.
         try:
+            print('=-====', self.cs)
             endpoint_api_version = \
-                self.cs.get_volume_api_version_from_endpoint()
+                self.cs.get_brick_api_version_from_endpoint()
             if endpoint_api_version != options.os_volume_api_version:
                 msg = (("OpenStack Block Storage API version is set to %s "
                         "but you are accessing a %s endpoint. "
@@ -836,9 +837,9 @@ class OpenStackHelpFormatter(argparse.HelpFormatter):
 def main():
     try:
         if sys.version_info >= (3, 0):
-            OpenStackCinderShell().main(sys.argv[1:])
+            OpenStackBrickShell().main(sys.argv[1:])
         else:
-            OpenStackCinderShell().main(map(strutils.safe_decode,
+            OpenStackBrickShell().main(map(strutils.safe_decode,
                                             sys.argv[1:]))
     except KeyboardInterrupt:
         print("... terminating cinder client", file=sys.stderr)

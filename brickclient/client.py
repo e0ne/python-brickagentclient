@@ -55,7 +55,7 @@ if not hasattr(urlparse, 'parse_qsl'):
 _VALID_VERSIONS = ['v1']
 
 
-def get_volume_api_from_url(url):
+def get_brick_api_from_url(url):
     scheme, netloc, path, query, frag = urlparse.urlsplit(url)
     components = path.split("/")
 
@@ -116,8 +116,8 @@ class SessionClient(adapter.LegacyJsonAdapter):
             kwargs.setdefault('region_name', self.region_name)
         return self.session.get_endpoint(auth or self.auth, **kwargs)
 
-    def get_volume_api_version_from_endpoint(self):
-        return get_volume_api_from_url(self._get_endpoint())
+    def get_brick_api_version_from_endpoint(self):
+        return get_brick_api_from_url(self._get_endpoint())
 
     def authenticate(self, auth=None):
         self._invalidate(auth)
@@ -300,6 +300,9 @@ class HTTPClient(object):
             sleep(backoff)
             backoff *= 2
 
+    def get_brick_api_version_from_endpoint(self):
+        return get_brick_api_from_url(self.management_url)
+
     def get(self, url, **kwargs):
         return self._cs_request(url, 'GET', **kwargs)
 
@@ -311,9 +314,6 @@ class HTTPClient(object):
 
     def delete(self, url, **kwargs):
         return self._cs_request(url, 'DELETE', **kwargs)
-
-    def get_volume_api_version_from_endpoint(self):
-        return get_volume_api_from_url(self.management_url)
 
     def _extract_service_catalog(self, url, resp, body, extract_token=True):
         """See what the auth service told us and process the response.

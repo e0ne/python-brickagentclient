@@ -34,8 +34,8 @@ class FakeClient(fakes.FakeClient, client.Client):
                                extensions=kwargs.get('extensions'))
         self.client = FakeHTTPClient(**kwargs)
 
-    def get_volume_api_version_from_endpoint(self):
-        return self.client.get_volume_api_version_from_endpoint()
+    def get_brick_api_version_from_endpoint(self):
+        return self.client.get_brick_api_version_from_endpoint()
 
 
 class FakeHTTPClient(base_client.HTTPClient):
